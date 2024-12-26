@@ -1,23 +1,29 @@
-use firecracker_client::{
+use firecracker_http_client::{
     FirecrackerClient,
+    action::InstanceActionInfo,
     balloon::BalloonOperations,
     boot::BootSourceOperations,
+    cpu::{CpuConfig, CpuConfigOperations},
     drive::DriveOperations,
+    entropy::{EntropyDevice, EntropyDeviceOperations},
+    instance::InstanceOperations,
     logger::LoggerOperations,
     machine::MachineConfigOperations,
     metrics::{Metrics, MetricsOperations},
-    network::NetworkInterfaceOperations,
-    vsock::VsockOperations,
-    cpu::CpuConfigOperations,
-    entropy::EntropyDeviceOperations,
-    instance::InstanceOperations,
     mmds::MmdsOperations,
+    network::NetworkInterfaceOperations,
+    snapshot::{SnapshotCreateParams, SnapshotLoadParams, SnapshotOperations},
     version::VersionOperations,
-    snapshot::SnapshotOperations,
-    models::{
-        Balloon, BootSource, MachineConfig, Drive, NetworkInterface,
-        Vsock, Logger,
-    },
+    vsock::VsockOperations,
+};
+use firecracker_http_client::models::{
+    Balloon,
+    BootSource,
+    Drive,
+    Logger,
+    MachineConfig,
+    NetworkInterface,
+    Vsock,
 };
 use serde_json::Value;
 
@@ -45,9 +51,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         vcpu_count: Some(2),
         mem_size_mib: Some(1024),
         cpu_template: None,
-        huge_pages: None,
-        smt: None,
-        track_dirty_pages: None,
+        ..Default::default()
     };
     client.put_machine_config(&machine_config).await?;
 
@@ -65,10 +69,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         path_on_host: "/path/to/rootfs".to_string(),
         is_root_device: true,
         is_read_only: false,
-        partuuid: None,
-        rate_limiter: None,
-        cache_type: None,
+        cache_type: Some("Unsafe".to_string()),
         io_engine: None,
+        rate_limiter: None,
+        partuuid: None,
         socket: None,
     };
     client.put_drive("rootfs", &drive).await?;
@@ -99,50 +103,52 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     };
     client.put_vsock(&vsock).await?;
 
-    // Get version information
+    // Get version
     let version = client.get_version().await?;
     println!("Version: {:?}", version);
 
-    // Get instance information
+    // Get instance info
     let instance_info = client.describe_instance().await?;
     println!("Instance Info: {:?}", instance_info);
 
-    // Configure CPU
-    let cpu_config = firecracker_client::cpu::CpuConfig {
+    // Test CPU configuration
+    let cpu_config = CpuConfig {
         template: Some("C3".to_string()),
     };
     client.put_cpu_config(&cpu_config).await?;
 
-    // Configure entropy device
-    let entropy = firecracker_client::entropy::EntropyDevice {
+    // Test entropy device
+    let entropy = EntropyDevice {
         rate_limiter: None,
     };
     client.put_entropy_device(&entropy).await?;
 
-    // Configure MMDS
-    let mmds_data = Value::String("Hello, MMDS!".to_string());
-    client.put_mmds(mmds_data).await?;
-
-    // Start the instance
-    let action = firecracker_client::action::InstanceActionInfo::new("InstanceStart");
+    // Test instance actions
+    let action = InstanceActionInfo {
+        action_type: "InstanceStart".to_string(),
+    };
     client.create_sync_action(&action).await?;
 
-    // Create a snapshot
-    let snapshot_params = firecracker_client::snapshot::SnapshotCreateParams {
+    // Test snapshots
+    let snapshot_params = SnapshotCreateParams {
+        snapshot_path: "/tmp/snapshot".to_string(),
+        mem_file_path: "/tmp/snapshot.mem".to_string(),
+        version: Some("1.0".to_string()),
         snapshot_type: Some("Full".to_string()),
-        snapshot_path: "/path/to/snapshot".to_string(),
-        mem_file_path: "/path/to/mem_file".to_string(),
-        version: None,
     };
     client.create_snapshot(&snapshot_params).await?;
 
-    // Load a snapshot
-    let load_params = firecracker_client::snapshot::SnapshotLoadParams {
-        snapshot_path: "/path/to/snapshot".to_string(),
-        mem_file_path: "/path/to/mem_file".to_string(),
+    // Test loading snapshots
+    let load_params = SnapshotLoadParams {
+        snapshot_path: "/tmp/snapshot".to_string(),
+        mem_file_path: "/tmp/snapshot.mem".to_string(),
         enable_diff_snapshots: Some(true),
     };
     client.load_snapshot(&load_params).await?;
+
+    // Configure MMDS
+    let mmds_data = Value::String("Hello, MMDS!".to_string());
+    client.put_mmds(mmds_data).await?;
 
     Ok(())
 }

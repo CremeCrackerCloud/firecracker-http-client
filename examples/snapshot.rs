@@ -1,4 +1,4 @@
-use firecracker_client::{
+use firecracker_http_client::{
     FirecrackerClient,
     action::InstanceActionInfo,
     snapshot::{SnapshotCreateParams, SnapshotLoadParams, SnapshotOperations},

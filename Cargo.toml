@@ -1,13 +1,13 @@
 [package]
-name = "firecracker-client"
+name = "firecracker-http-client"
 version = "0.1.0"
 edition = "2021"
-description = "A Rust client library for interacting with the Firecracker VMM API"
+description = "A comprehensive HTTP client for the Firecracker VMM API"
 license = "Apache-2.0"
-repository = "https://github.com/yourusername/firecracker-client"
-documentation = "https://docs.rs/firecracker-client"
+repository = "https://github.com/yourusername/firecracker-http-client"
+documentation = "https://docs.rs/firecracker-http-client"
 readme = "README.md"
-keywords = ["firecracker", "vmm", "virtualization", "aws", "microvm"]
+keywords = ["firecracker", "vmm", "virtualization", "microvm", "api-client"]
 categories = ["api-bindings", "virtualization"]
 
 [dependencies]

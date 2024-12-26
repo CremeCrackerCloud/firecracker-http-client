@@ -1,6 +1,6 @@
-# Firecracker Client
+# Firecracker HTTP Client
 
-A comprehensive Rust client library for interacting with the Firecracker VMM API. This client provides a safe, ergonomic interface for managing Firecracker microVMs with full support for all Firecracker v1.11.0 features.
+A comprehensive Rust HTTP client library for interacting with the Firecracker VMM API. This client provides a safe, ergonomic interface for managing Firecracker microVMs with full support for all Firecracker v1.11.0 features.
 
 ## Features
 
@@ -18,7 +18,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-firecracker-client = "0.1.0"
+firecracker-http-client = "0.1.0"
 ```
 
 ## Core Components
@@ -41,7 +41,7 @@ The client is organized into trait-based modules for different Firecracker opera
 #### Machine Configuration
 
 ```rust
-use firecracker_client::{MachineConfig, machine::MachineConfigOperations};
+use firecracker_http_client::{MachineConfig, machine::MachineConfigOperations};
 
 let config = MachineConfig {
     vcpu_count: Some(2),
@@ -56,7 +56,7 @@ client.put_machine_config(&config).await?;
 #### Network Configuration
 
 ```rust
-use firecracker_client::{NetworkInterface, network::NetworkInterfaceOperations};
+use firecracker_http_client::{NetworkInterface, network::NetworkInterfaceOperations};
 
 let network = NetworkInterface {
     iface_id: "eth0".to_string(),
@@ -70,7 +70,7 @@ client.put_network_interface("eth0", &network).await?;
 #### Block Devices
 
 ```rust
-use firecracker_client::{Drive, drive::DriveOperations};
+use firecracker_http_client::{Drive, drive::DriveOperations};
 
 let drive = Drive {
     drive_id: "rootfs".to_string(),
@@ -89,7 +89,7 @@ client.put_drive("rootfs", &drive).await?;
 The basic_vm.rs example shows how to configure a simple microVM:
 
 ```rust
-use firecracker_client::{
+use firecracker_http_client::{
     FirecrackerClient,
     BootSource,
     Drive,
@@ -179,7 +179,7 @@ client.load_snapshot(&load_params).await?;
 The client provides detailed error types for better error handling:
 
 ```rust
-use firecracker_client::FirecrackerError;
+use firecracker_http_client::FirecrackerError;
 
 match result {
     Err(FirecrackerError::Api { status_code, message }) => {

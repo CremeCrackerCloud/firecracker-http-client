@@ -1,4 +1,4 @@
-use firecracker_client::{
+use firecracker_http_client::{
     FirecrackerClient,
     BootSource,
     Drive,
