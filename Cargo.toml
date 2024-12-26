@@ -1,6 +1,6 @@
 [package]
 name = "firecracker-http-client"
-version = "0.1.1"
+version = "0.1.3"
 edition = "2021"
 description = "A comprehensive HTTP client for the Firecracker VMM API"
 license = "Apache-2.0"

@@ -18,7 +18,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-firecracker-http-client = "0.1.0"
+firecracker-http-client = "0.1.3"
 ```
 
 ## Core Components

@@ -8,6 +8,10 @@ on:
 env:
   CARGO_TERM_COLOR: always
 
+permissions:
+  contents: write # This is needed for creating releases
+  packages: write # This is needed for publishing packages
+
 jobs:
   create-release:
     name: Create Release
@@ -30,6 +34,8 @@ jobs:
           body: ${{ steps.changelog.outputs.content }}
           draft: false
           prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           
   publish-crate:
     name: Publish to crates.io
