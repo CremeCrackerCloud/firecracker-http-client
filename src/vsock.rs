@@ -1,7 +1,7 @@
-use async_trait::async_trait;
-use validator::Validate;
 use crate::models::Vsock;
 use crate::FirecrackerError;
+use async_trait::async_trait;
+use validator::Validate;
 
 #[async_trait]
 pub trait VsockOperations {
@@ -12,7 +12,7 @@ pub trait VsockOperations {
 impl VsockOperations for crate::FirecrackerClient {
     async fn put_vsock(&self, vsock: &Vsock) -> Result<(), FirecrackerError> {
         vsock.validate()?;
-        
+
         let url = self.url("vsock")?;
         let response = self.client.put(url).json(vsock).send().await?;
 

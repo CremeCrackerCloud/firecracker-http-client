@@ -1,8 +1,8 @@
+use crate::validation::validate_writable_path;
+use crate::FirecrackerError;
 use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 use validator::Validate;
-use crate::FirecrackerError;
-use crate::validation::validate_writable_path;
 
 #[derive(Debug, Serialize, Deserialize, Validate)]
 pub struct Metrics {
@@ -19,7 +19,7 @@ pub trait MetricsOperations {
 impl MetricsOperations for crate::FirecrackerClient {
     async fn put_metrics(&self, metrics: &Metrics) -> Result<(), FirecrackerError> {
         metrics.validate()?;
-        
+
         let url = self.url("metrics")?;
         let response = self.client.put(url).json(metrics).send().await?;
 

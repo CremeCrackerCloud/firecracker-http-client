@@ -1,38 +1,35 @@
+use crate::{action::InstanceActionInfo, error::FirecrackerError};
 use reqwest::{Client, StatusCode};
 use url::Url;
-use crate::{
-    error::FirecrackerError,
-    action::InstanceActionInfo,
-};
 
 #[cfg(test)]
 mod tests;
 
-pub mod error;
-pub mod models;
-pub mod vm;
+pub mod action;
 pub mod balloon;
 pub mod boot;
-pub mod drive;
-pub mod network;
-pub mod machine;
 pub mod cpu;
-pub mod mmds;
-pub mod instance;
-pub mod action;
-pub mod logger;
-pub mod metrics;
+pub mod drive;
 pub mod entropy;
-pub mod vsock;
-pub mod version;
+pub mod error;
+pub mod instance;
+pub mod logger;
+pub mod machine;
+pub mod metrics;
+pub mod mmds;
+pub mod models;
+pub mod network;
 pub mod snapshot;
 pub mod validation;
+pub mod version;
+pub mod vm;
+pub mod vsock;
 
-pub use models::*;
-pub use vm::VmOperations;
 pub use drive::DriveOperations;
+pub use models::*;
 pub use network::NetworkInterfaceOperations;
 pub use snapshot::SnapshotOperations;
+pub use vm::VmOperations;
 
 pub struct FirecrackerClient {
     base_url: String,
@@ -48,18 +45,21 @@ impl FirecrackerClient {
     }
 
     pub(crate) fn url(&self, path: &str) -> Result<Url, FirecrackerError> {
-        let url = format!("{}/{}", self.base_url.trim_end_matches('/'), path.trim_start_matches('/'));
+        let url = format!(
+            "{}/{}",
+            self.base_url.trim_end_matches('/'),
+            path.trim_start_matches('/')
+        );
         Url::parse(&url).map_err(FirecrackerError::UrlParseError)
     }
 
-    pub async fn create_sync_action(&self, action: &InstanceActionInfo) -> Result<(), FirecrackerError> {
+    pub async fn create_sync_action(
+        &self,
+        action: &InstanceActionInfo,
+    ) -> Result<(), FirecrackerError> {
         let url = self.url("/actions")?;
-        
-        let response = self.client
-            .put(url)
-            .json(&action)
-            .send()
-            .await?;
+
+        let response = self.client.put(url).json(&action).send().await?;
 
         match response.status() {
             StatusCode::NO_CONTENT => Ok(()),

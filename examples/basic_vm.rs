@@ -1,17 +1,8 @@
 use firecracker_http_client::{
-    FirecrackerClient,
-    BootSource,
-    Drive,
-    MachineConfig,
-    NetworkInterface,
-    Logger,
-    metrics::Metrics,
-    boot::BootSourceOperations,
-    drive::DriveOperations,
-    logger::LoggerOperations,
-    machine::MachineConfigOperations,
-    metrics::MetricsOperations,
-    network::NetworkInterfaceOperations,
+    boot::BootSourceOperations, drive::DriveOperations, logger::LoggerOperations,
+    machine::MachineConfigOperations, metrics::Metrics, metrics::MetricsOperations,
+    network::NetworkInterfaceOperations, BootSource, Drive, FirecrackerClient, Logger,
+    MachineConfig, NetworkInterface,
 };
 use std::error::Error;
 

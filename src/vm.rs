@@ -1,5 +1,5 @@
-use serde::{Deserialize, Serialize};
 use async_trait::async_trait;
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct VmConfig {
@@ -30,7 +30,7 @@ impl VmOperations for crate::FirecrackerClient {
     async fn get_vm_info(&self) -> Result<VmInfo, crate::FirecrackerError> {
         let url = self.url("vm")?;
         let response = self.client.get(url).send().await?;
-        
+
         if !response.status().is_success() {
             return Err(crate::FirecrackerError::Api {
                 status_code: response.status().as_u16(),

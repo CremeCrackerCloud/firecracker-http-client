@@ -1,6 +1,6 @@
-use std::path::Path;
-use validator::{ValidationError};
 use std::borrow::Cow;
+use std::path::Path;
+use validator::ValidationError;
 
 pub fn path_validation_error(message: impl Into<Cow<'static, str>>) -> ValidationError {
     let mut err = ValidationError::new("invalid_path");
@@ -21,7 +21,9 @@ pub fn validate_unix_path(path: &str) -> Result<(), ValidationError> {
 
     // Check if path contains invalid characters
     if path.contains('\0') || path.contains("..") {
-        return Err(path_validation_error("Path cannot contain parent directory references or null characters"));
+        return Err(path_validation_error(
+            "Path cannot contain parent directory references or null characters",
+        ));
     }
 
     // Check if path is valid UTF-8 and can be parsed
@@ -35,20 +37,20 @@ pub fn validate_unix_path(path: &str) -> Result<(), ValidationError> {
 // Custom validation function for paths that should exist
 pub fn validate_existing_path(path: &str) -> Result<(), ValidationError> {
     validate_unix_path(path)?;
-    
+
     if !Path::new(path).exists() {
         return Err(path_validation_error("Path does not exist"));
     }
-    
+
     Ok(())
 }
 
 // Custom validation function for paths that should be writable
 pub fn validate_writable_path(path: &str) -> Result<(), ValidationError> {
     validate_unix_path(path)?;
-    
+
     let path = Path::new(path);
-    
+
     // If path exists, check if it's writable
     if path.exists() {
         #[cfg(unix)]
@@ -79,7 +81,7 @@ pub fn validate_writable_path(path: &str) -> Result<(), ValidationError> {
             }
         }
     }
-    
+
     Ok(())
 }
 

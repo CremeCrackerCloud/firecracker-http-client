@@ -1,7 +1,7 @@
 use std::path::PathBuf;
 use thiserror::Error;
-use validator::ValidationErrors;
 use url::ParseError;
+use validator::ValidationErrors;
 
 /// Represents all possible errors that can occur when using the Firecracker client.
 #[derive(Error, Debug)]
@@ -24,10 +24,7 @@ pub enum FirecrackerError {
 
     /// Error from Firecracker API
     #[error("Firecracker API error: {status_code} - {message}")]
-    Api {
-        status_code: u16,
-        message: String,
-    },
+    Api { status_code: u16, message: String },
 
     /// Error with invalid paths
     #[error("Invalid path: {0}")]
@@ -61,9 +58,7 @@ pub enum FirecrackerError {
 
     /// Timeout error
     #[error("Operation timed out after {duration_secs} seconds")]
-    Timeout {
-        duration_secs: u64,
-    },
+    Timeout { duration_secs: u64 },
 
     /// Generic error for cases that don't fit other categories
     #[error("Internal error: {0}")]

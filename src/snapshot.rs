@@ -1,9 +1,9 @@
+use crate::validation::validate_existing_path;
+use crate::validation::validate_writable_path;
+use crate::FirecrackerError;
 use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 use validator::Validate;
-use crate::FirecrackerError;
-use crate::validation::validate_writable_path;
-use crate::validation::validate_existing_path;
 
 #[derive(Debug, Serialize, Deserialize, Validate)]
 pub struct SnapshotCreateParams {
@@ -12,7 +12,10 @@ pub struct SnapshotCreateParams {
     #[validate(custom = "validate_writable_path")]
     pub mem_file_path: String,
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[validate(regex(path = "SNAPSHOT_TYPE_REGEX", message = "Invalid snapshot type. Must be one of: Full, Diff"))]
+    #[validate(regex(
+        path = "SNAPSHOT_TYPE_REGEX",
+        message = "Invalid snapshot type. Must be one of: Full, Diff"
+    ))]
     pub snapshot_type: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub version: Option<String>,
@@ -42,7 +45,7 @@ pub trait SnapshotOperations {
 impl SnapshotOperations for crate::FirecrackerClient {
     async fn create_snapshot(&self, params: &SnapshotCreateParams) -> Result<(), FirecrackerError> {
         params.validate()?;
-        
+
         let url = self.url("/snapshot/create")?;
         let response = self.client.put(url).json(params).send().await?;
 
@@ -58,7 +61,7 @@ impl SnapshotOperations for crate::FirecrackerClient {
 
     async fn load_snapshot(&self, params: &SnapshotLoadParams) -> Result<(), FirecrackerError> {
         params.validate()?;
-        
+
         let url = self.url("/snapshot/load")?;
         let response = self.client.put(url).json(params).send().await?;
 

@@ -1,8 +1,8 @@
-use async_trait::async_trait;
-use serde::{Deserialize, Serialize};
 use crate::error::FirecrackerError;
+use async_trait::async_trait;
 use lazy_static::lazy_static;
 use regex::Regex;
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct InstanceActionInfo {
@@ -18,17 +18,22 @@ impl InstanceActionInfo {
 }
 
 lazy_static! {
-    static ref ACTION_TYPE_REGEX: Regex = Regex::new(r"^(InstanceStart|InstanceHalt|SendCtrlAltDel)$").unwrap();
+    static ref ACTION_TYPE_REGEX: Regex =
+        Regex::new(r"^(InstanceStart|InstanceHalt|SendCtrlAltDel)$").unwrap();
 }
 
 #[async_trait]
 pub trait ActionOperations {
-    async fn create_sync_action(&self, action: &InstanceActionInfo) -> Result<(), FirecrackerError>;
+    async fn create_sync_action(&self, action: &InstanceActionInfo)
+        -> Result<(), FirecrackerError>;
 }
 
 #[async_trait]
 impl ActionOperations for crate::FirecrackerClient {
-    async fn create_sync_action(&self, action: &InstanceActionInfo) -> Result<(), FirecrackerError> {
+    async fn create_sync_action(
+        &self,
+        action: &InstanceActionInfo,
+    ) -> Result<(), FirecrackerError> {
         let url = self.url("actions")?;
         let response = self.client.put(url).json(action).send().await?;
 

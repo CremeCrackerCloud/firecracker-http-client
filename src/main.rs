@@ -1,5 +1,7 @@
+use firecracker_http_client::models::{
+    Balloon, BootSource, Drive, Logger, MachineConfig, NetworkInterface, Vsock,
+};
 use firecracker_http_client::{
-    FirecrackerClient,
     action::InstanceActionInfo,
     balloon::BalloonOperations,
     boot::BootSourceOperations,
@@ -15,15 +17,7 @@ use firecracker_http_client::{
     snapshot::{SnapshotCreateParams, SnapshotLoadParams, SnapshotOperations},
     version::VersionOperations,
     vsock::VsockOperations,
-};
-use firecracker_http_client::models::{
-    Balloon,
-    BootSource,
-    Drive,
-    Logger,
-    MachineConfig,
-    NetworkInterface,
-    Vsock,
+    FirecrackerClient,
 };
 use serde_json::Value;
 
@@ -118,9 +112,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     client.put_cpu_config(&cpu_config).await?;
 
     // Test entropy device
-    let entropy = EntropyDevice {
-        rate_limiter: None,
-    };
+    let entropy = EntropyDevice { rate_limiter: None };
     client.put_entropy_device(&entropy).await?;
 
     // Test instance actions

@@ -1,25 +1,19 @@
 #[cfg(test)]
 mod tests {
-    use crate::{
-        FirecrackerClient,
-        balloon::BalloonOperations,
-        logger::LoggerOperations,
-        metrics::MetricsOperations,
-        vsock::VsockOperations,
-        cpu::CpuConfigOperations,
-        entropy::EntropyDeviceOperations,
-        vm::VmOperations,
-        mmds::MmdsOperations,
-    };
+    use crate::balloon::BalloonStatsUpdate;
     use crate::cpu::CpuConfig;
     use crate::entropy::EntropyDevice;
-    use crate::vm::VmConfig;
-    use crate::balloon::BalloonStatsUpdate;
     use crate::logger::Logger;
     use crate::metrics::Metrics;
     use crate::models::Vsock;
+    use crate::vm::VmConfig;
+    use crate::{
+        balloon::BalloonOperations, cpu::CpuConfigOperations, entropy::EntropyDeviceOperations,
+        logger::LoggerOperations, metrics::MetricsOperations, mmds::MmdsOperations,
+        vm::VmOperations, vsock::VsockOperations, FirecrackerClient,
+    };
+    use mockito::{Server, ServerGuard};
     use serde_json::Value;
-    use mockito::{ServerGuard, Server};
 
     async fn create_test_client() -> (ServerGuard, FirecrackerClient) {
         let server = Server::new_async().await;
@@ -30,9 +24,7 @@ mod tests {
     #[tokio::test]
     async fn test_logger_configuration() {
         let (mut server, client) = create_test_client().await;
-        let _m = server.mock("PUT", "/logger")
-            .with_status(204)
-            .create();
+        let _m = server.mock("PUT", "/logger").with_status(204).create();
 
         let logger = Logger {
             log_path: "/tmp/firecracker.log".to_string(),
@@ -47,9 +39,7 @@ mod tests {
     #[tokio::test]
     async fn test_logger_validation() {
         let (mut server, client) = create_test_client().await;
-        let _m = server.mock("PUT", "/logger")
-            .with_status(204)
-            .create();
+        let _m = server.mock("PUT", "/logger").with_status(204).create();
 
         let logger = Logger {
             log_path: "/tmp/firecracker.log".to_string(),
@@ -92,9 +82,11 @@ mod tests {
     #[tokio::test]
     async fn test_balloon_stats() {
         let (mut server, client) = create_test_client().await;
-        let _m = server.mock("GET", "/balloon/statistics")
+        let _m = server
+            .mock("GET", "/balloon/statistics")
             .with_status(200)
-            .with_body(r#"{
+            .with_body(
+                r#"{
                 "target_pages": 1000,
                 "actual_pages": 950,
                 "target_mib": 4,
@@ -102,7 +94,8 @@ mod tests {
                 "swap_in": 0,
                 "swap_out": 0,
                 "major_faults": 0
-            }"#)
+            }"#,
+            )
             .create();
 
         let response = client.get_balloon_stats().await.unwrap();
@@ -113,7 +106,8 @@ mod tests {
     #[tokio::test]
     async fn test_balloon_stats_update() {
         let (mut server, client) = create_test_client().await;
-        let _m = server.mock("PATCH", "/balloon/statistics")
+        let _m = server
+            .mock("PATCH", "/balloon/statistics")
             .with_status(204)
             .create();
 
@@ -127,9 +121,7 @@ mod tests {
     #[tokio::test]
     async fn test_cpu_config() {
         let (mut server, client) = create_test_client().await;
-        let _m = server.mock("PUT", "/cpu-config")
-            .with_status(204)
-            .create();
+        let _m = server.mock("PUT", "/cpu-config").with_status(204).create();
 
         let config = CpuConfig {
             template: Some("C3".to_string()),
@@ -141,9 +133,7 @@ mod tests {
     #[tokio::test]
     async fn test_metrics_config() {
         let (mut server, client) = create_test_client().await;
-        let _m = server.mock("PUT", "/metrics")
-            .with_status(204)
-            .create();
+        let _m = server.mock("PUT", "/metrics").with_status(204).create();
 
         let metrics = Metrics {
             metrics_path: "/tmp/metrics".to_string(),
@@ -155,9 +145,7 @@ mod tests {
     #[tokio::test]
     async fn test_mmds_config() {
         let (mut server, client) = create_test_client().await;
-        let _m = server.mock("PUT", "/mmds")
-            .with_status(204)
-            .create();
+        let _m = server.mock("PUT", "/mmds").with_status(204).create();
 
         let config = Value::Object(serde_json::Map::new());
 
@@ -167,9 +155,7 @@ mod tests {
     #[tokio::test]
     async fn test_vsock_config() {
         let (mut server, client) = create_test_client().await;
-        let _m = server.mock("PUT", "/vsock")
-            .with_status(204)
-            .create();
+        let _m = server.mock("PUT", "/vsock").with_status(204).create();
 
         let vsock = Vsock {
             guest_cid: 3,
@@ -183,13 +169,9 @@ mod tests {
     #[tokio::test]
     async fn test_entropy_device() {
         let (mut server, client) = create_test_client().await;
-        let _m = server.mock("PUT", "/entropy")
-            .with_status(204)
-            .create();
+        let _m = server.mock("PUT", "/entropy").with_status(204).create();
 
-        let device = EntropyDevice {
-            rate_limiter: None,
-        };
+        let device = EntropyDevice { rate_limiter: None };
 
         client.put_entropy_device(&device).await.unwrap();
     }
@@ -197,9 +179,7 @@ mod tests {
     #[tokio::test]
     async fn test_instance_actions() {
         let (mut server, client) = create_test_client().await;
-        let _m = server.mock("PUT", "/actions")
-            .with_status(204)
-            .create();
+        let _m = server.mock("PUT", "/actions").with_status(204).create();
 
         let action = crate::action::InstanceActionInfo::new("InstanceStart");
         client.create_sync_action(&action).await.unwrap();
@@ -208,9 +188,7 @@ mod tests {
     #[tokio::test]
     async fn test_vm_config() {
         let (mut server, client) = create_test_client().await;
-        let _m = server.mock("PUT", "/vm/config")
-            .with_status(204)
-            .create();
+        let _m = server.mock("PUT", "/vm/config").with_status(204).create();
 
         let config = VmConfig {
             vcpu_count: Some(2),
@@ -225,7 +203,8 @@ mod tests {
     #[tokio::test]
     async fn test_vm_info() {
         let (mut server, client) = create_test_client().await;
-        let _m = server.mock("GET", "/vm")
+        let _m = server
+            .mock("GET", "/vm")
             .with_status(200)
             .with_body(r#"{"state": "Running", "id": "test-vm"}"#)
             .create();

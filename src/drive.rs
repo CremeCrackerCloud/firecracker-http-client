@@ -1,6 +1,6 @@
-use async_trait::async_trait;
 use crate::models::Drive;
 use crate::FirecrackerError;
+use async_trait::async_trait;
 
 #[async_trait]
 pub trait DriveOperations {

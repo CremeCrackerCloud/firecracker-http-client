@@ -1,19 +1,8 @@
 use firecracker_http_client::{
-    FirecrackerClient,
-    BootSource,
-    Drive,
-    MachineConfig,
-    NetworkInterface,
-    Logger,
-    metrics::Metrics,
-    action::InstanceActionInfo,
-    boot::BootSourceOperations,
-    drive::DriveOperations,
-    logger::LoggerOperations,
-    machine::MachineConfigOperations,
-    metrics::MetricsOperations,
-    network::NetworkInterfaceOperations,
-    instance::InstanceOperations,
+    action::InstanceActionInfo, boot::BootSourceOperations, drive::DriveOperations,
+    instance::InstanceOperations, logger::LoggerOperations, machine::MachineConfigOperations,
+    metrics::Metrics, metrics::MetricsOperations, network::NetworkInterfaceOperations, BootSource,
+    Drive, FirecrackerClient, Logger, MachineConfig, NetworkInterface,
 };
 use std::{error::Error, time::Duration};
 use tokio::time::sleep;
@@ -89,7 +78,10 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // Wait for VM to boot and get instance info
     sleep(Duration::from_secs(2)).await;
     let instance_info = client.describe_instance().await?;
-    println!("VM started successfully. Instance state: {}", instance_info.state);
+    println!(
+        "VM started successfully. Instance state: {}",
+        instance_info.state
+    );
 
     // Let VM run for a while (10 seconds in this example)
     println!("VM will run for 10 seconds...");

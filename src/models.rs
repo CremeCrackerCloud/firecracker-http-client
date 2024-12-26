@@ -1,8 +1,8 @@
-use serde::{Deserialize, Serialize};
-use validator::Validate;
-use crate::validation::{validate_unix_path, validate_existing_path};
+use crate::validation::{validate_existing_path, validate_unix_path};
 use lazy_static::lazy_static;
 use regex::Regex;
+use serde::{Deserialize, Serialize};
+use validator::Validate;
 
 // Re-exports
 pub use crate::logger::Logger;
@@ -348,6 +348,10 @@ pub struct VmConfig {
 }
 
 lazy_static! {
-    static ref MAC_ADDRESS_REGEX: Regex = Regex::new(r"^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$").unwrap();
-    static ref PARTUUID_REGEX: Regex = Regex::new(r"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$").unwrap();
+    static ref MAC_ADDRESS_REGEX: Regex =
+        Regex::new(r"^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$").unwrap();
+    static ref PARTUUID_REGEX: Regex = Regex::new(
+        r"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+    )
+    .unwrap();
 }

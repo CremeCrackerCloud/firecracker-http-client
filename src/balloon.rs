@@ -1,7 +1,7 @@
-use async_trait::async_trait;
-use serde::{Deserialize, Serialize};
 use crate::models::{Balloon, BalloonStats};
 use crate::FirecrackerError;
+use async_trait::async_trait;
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct BalloonUpdate {
@@ -19,7 +19,10 @@ pub trait BalloonOperations {
     async fn put_balloon_config(&self, config: &Balloon) -> Result<(), FirecrackerError>;
     async fn patch_balloon_config(&self, update: &BalloonUpdate) -> Result<(), FirecrackerError>;
     async fn get_balloon_stats(&self) -> Result<BalloonStats, FirecrackerError>;
-    async fn patch_balloon_stats(&self, update: &BalloonStatsUpdate) -> Result<(), FirecrackerError>;
+    async fn patch_balloon_stats(
+        &self,
+        update: &BalloonStatsUpdate,
+    ) -> Result<(), FirecrackerError>;
 }
 
 #[async_trait]
@@ -80,7 +83,10 @@ impl BalloonOperations for crate::FirecrackerClient {
         Ok(response.json().await?)
     }
 
-    async fn patch_balloon_stats(&self, update: &BalloonStatsUpdate) -> Result<(), FirecrackerError> {
+    async fn patch_balloon_stats(
+        &self,
+        update: &BalloonStatsUpdate,
+    ) -> Result<(), FirecrackerError> {
         let url = self.url("balloon/statistics")?;
         let response = self.client.patch(url).json(update).send().await?;
 

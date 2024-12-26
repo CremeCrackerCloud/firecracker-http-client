@@ -1,6 +1,6 @@
+use crate::FirecrackerError;
 use async_trait::async_trait;
 use serde_json::Value;
-use crate::FirecrackerError;
 
 #[async_trait]
 pub trait MmdsOperations {
